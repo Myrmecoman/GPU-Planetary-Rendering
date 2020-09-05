@@ -1,6 +1,5 @@
-using System;
 using UnityEngine;
-using System.Collections;
+
 
 public class FlyCamera : MonoBehaviour
 {
@@ -13,8 +12,8 @@ public class FlyCamera : MonoBehaviour
 	public float speedMultiply = 1;
     public PlanetCreator planetCreator;
 
-    private bool cursorLocked = true;
-    private Quaternion rotation = Quaternion.identity;
+    private bool cursorLocked = false;
+
 
     private void Start()
 	{
@@ -22,9 +21,10 @@ public class FlyCamera : MonoBehaviour
 		Cursor.visible = false;
 	}
 
+
     void Update()
     {
-	    if (cursorLocked)
+	    if (!cursorLocked)
 	    {
             transform.localRotation *= Quaternion.AngleAxis(Input.GetAxis("Mouse X") * cameraSensitivity, Vector3.up);
             transform.localRotation *= Quaternion.AngleAxis(Input.GetAxis("Mouse Y") * cameraSensitivity, Vector3.left);
@@ -53,45 +53,38 @@ public class FlyCamera : MonoBehaviour
 			speedMultiply = Mathf.Max(0, speedMultiply);
 
 
-			if (Input.GetKey(KeyCode.Q))
-            {
+			if (Input.GetKey(KeyCode.E))
                 transform.localRotation *= Quaternion.AngleAxis(rollSpeed * Time.deltaTime, Vector3.back);
-            }
-		    if (Input.GetKey(KeyCode.E))
-		    {
+		    if (Input.GetKey(KeyCode.A))
                 transform.localRotation *= Quaternion.AngleAxis(rollSpeed * Time.deltaTime,Vector3.forward);
-            }
         }
 
 	    if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Escape))
 		{
-			cursorLocked = !cursorLocked;
-            Cursor.lockState = cursorLocked ? CursorLockMode.Locked : CursorLockMode.None;
-			Cursor.visible = !cursorLocked;
+			if (!cursorLocked)
+			{
+				cursorLocked = true;
+				Cursor.lockState = CursorLockMode.None;
+				Cursor.visible = true;
+			}
+			else
+            {
+				cursorLocked = false;
+				Cursor.lockState = CursorLockMode.Locked;
+				Cursor.visible = false;
+			}
 		}
 
-	    if (Input.GetKeyDown(KeyCode.C))
-	    {
-		    ScreenCapture.CaptureScreenshot(Application.dataPath.Replace("Assets", "Screenshots") + string.Format("{0:yyyy-MM-dd_hh-mm-ss-tt}", DateTime.Now) + ".png",2);
-	    }
-
         if (Input.GetKeyDown(KeyCode.X))
-        {
             Application.Quit();
-        }
 	}
+
 
 	private void OnDrawGizmos()
 	{
 		if(planetCreator == null) return;
 		var nearestChunk = planetCreator.GetNearestChunkProperties(transform.position);
 		if (nearestChunk != null)
-		{
-			//if(nearestChunk.Active)
-				//Gizmos.DrawWireMesh(nearestChunk.Chunk.Filter.sharedMesh);
-
 			Gizmos.DrawWireCube(nearestChunk.Bounds.center, nearestChunk.Bounds.size);
-
-		}
 	}
 }
