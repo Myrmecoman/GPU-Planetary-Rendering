@@ -6,3 +6,4 @@ A fork from https://github.com/simeonradivoev/GPU-Planetary-Rendering
 
 - Adding double precision vectors and quaternions library
 - Changing keybinds to french keyboard
+- Post processing volume tweaks
